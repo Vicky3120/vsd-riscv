@@ -106,3 +106,43 @@ Explanation of Key Commands and Options:
    </details>
 
 ---
+<details>
+<summary><b>Task 2:</b> Performing SPIKE Simulation and Debugging the C code with interactive Debugging Mode using SPIKE </summary>
+
+### SPIKE SIMULAION
+
+the target is to run ```sum1ton.c``` code using both ```gcc compiler``` and ```riscv compiler```, and both of the compiler must display the same output on the terminal. So to compile the code using **gcc compiler**, use the following command:
+```
+gcc sum_1ton.c  
+./a.out
+```
+And to compile the code using **riscv compiler**, use the following command:  
+```
+spike pk sum_1ton.o
+```
+![Spike Simulation](https://github.com/Vicky3120/vsd-riscv/blob/39222efab0a3c052c76bfdae41ae52f1991aff86/task%202/Screenshot%202025-04-08%20185059.png)
+
+##Steps to Debug the output
+```sh
+spike -d pk sum1ton.c
+```
+// Debugger Mode will open and the operation is performed as shown in the figure
+
+![Spike Debugger](https://github.com/Vicky3120/vsd-riscv/blob/39222efab0a3c052c76bfdae41ae52f1991aff86/task%202/Screenshot%202025-04-08%20191804.png)
+
+### Explination of Key Commands:
+1. Spike: Spike is a open-source C++ simulator for the RISC-V ISA that models a RISC-V core and cache system. It can be used to run programs and a Linux Kernal, and can be a starting point for running software on a RISC-V target.
+
+2. -d: This flag is for debugging mode. It tells Spike to run in debug mode, allowing step-by-step execution, inspecting registers, memory, etc. Useful for identifying the errors and analyzing program behaviour.
+
+3. pk: This refers to the proxy kernal, which acts as a lightweight OS for RISC-V. The proxy kernal handles system calls and facilities program execution in the simulated environment.
+
+</details>
+</details>
+
+---
+
+<details>
+<summary><b>Task 3:</b>Understanding the R, I, S, B, U and J Instructions</summary>
+
+
