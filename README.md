@@ -146,3 +146,225 @@ spike -d pk sum1ton.c
 <summary><b>Task 3:</b>Understanding the R, I, S, B, U and J Instructions</summary>
 
 
+# BASICS
+
+ ## Instruction Types and Fields
+
+The RISC-V instructions are categorized into types based on their field organization. Each type has specific fields like opcode, func3, func7, immediate values, and register numbers. The types include:
+- **R-type**: Register type
+- **I-type**: Immediate type
+- **S-type**: Store type
+- **B-type**: Branch type
+- **U-type**: Upper immediate type
+- **J-type**: Jump type
+
+## Opcode and Function Fields
+- **Opcode**: Determines the type of instruction.
+- **func3** and **func7**: Further specify the operation within the instruction type.
+  - Example: In R-type instructions, func3 and func7 differentiate between operations like addition and subtraction.
+## Immediate Values and Registers
+- **Immediate Values**: Encoded in specific fields within the instruction.
+  - Example: I-type instructions use a 12-bit immediate value field along with source and destination registers.
+- **Registers**: Specified in fields such as rd (destination register), rs1 (source register 1), and rs2 (source register 2).
+### Example - U-Type Instruction
+Consider the `lui` (Load Upper Immediate) instruction:
+- **Assembly**: `lui x5, 0x12345`
+- **Encoding**: The immediate value `0x12345` is placed in the instruction’s immediate field, and the destination register `x5` is specified in the rd field.
+- **Machine Execution**: The machine loads the upper 20 bits of the immediate value into the upper 20 bits of register `x5`.
+   ## Arithmetic Instructions
+- **ADD**: Adds values in two registers and stores the result in a third register.
+  - Example: `ADD rd, rs1, rs2` (rd = rs1 + rs2)
+- **ADDI**: Adds a register and an immediate value (constant) and stores the result.
+  - Example: `ADDI rd, rs1, imm` (rd = rs1 + imm)
+## Logical Instructions
+- **AND, OR, XOR**: Perform bitwise operations.
+  - Example: `AND rd, rs1, rs2` (rd = rs1 & rs2)
+## Branch Instructions
+- **BEQ**: Branch if equal.
+  - Example: `BEQ rs1, rs2, offset` (if rs1 == rs2, PC = PC + offset)
+- **BNE**: Branch if not equal.
+  - Example: `BNE rs1, rs2, offset` (if rs1 != rs2, PC = PC + offset)
+## Load and Store Instructions
+- **LW**: Load word from memory.
+  - Example: `LW rd, offset(rs1)` (rd = memory[rs1 + offset])
+- **SW**: Store word to memory.
+  - Example: `SW rs1, offset(rs2)` (memory[rs2 + offset] = rs1)
+## Special Instructions
+- **AUIPC**: Add upper immediate to PC.
+  - Example: `AUIPC rd, imm` (rd = PC + imm << 12)
+## Branch and Jump Instructions
+- **Jump (J)**: Unconditional branch to a specified address.
+- **Branch (B)**: Conditional branch based on a comparison.
+## RV32I Extensions
+RISC-V allows optional extensions for additional functionality:
+- **M**: Integer multiplication and division.
+- **A**: Atomic instructions.
+- **F, D, Q**: Floating-point operations (32-bit, 64-bit, 128-bit).
+- **C**: Compressed instructions.
+### RISC-V R-Type Instructions
+R-type instructions are used for operations that involve only registers. These instructions typically perform arithmetic, logical, and shift operations.
+#### Format: 
+![image](https://github.com/Vicky3120/vsd-riscv/blob/0348607a15c39ffe63a27ebc95b305d2876f9404/task%203/r%20type.png)
+- **opcode**: Specifies the operation (e.g., 0110011 for integer register-register operations).
+- **rd**: Destination register.
+- **funct3**: Further specifies the operation.
+- **rs1**: First source register.
+- **rs2**: Second source register.
+- **funct7**: Further specifies the operation.
+### I-Type Instructions
+I-Type instructions cover various operations, including immediate arithmetic, load operations, and certain control flow instructions.
+### Extracting Immediate Value
+- The immediate value spans bits [31:20].
+- To extract this value:
+  - Mask the instruction to isolate the relevant bits.
+  - Perform a right shift to align the immediate value to the least significant bits (LSBs).
+- **Example**: If the instruction value is `0x12345678`, the immediate value is extracted as follows:
+  ```cpp
+  uint32_t imm_i = (instruction & 0xFFF00000) >> 20;
+![image](https://github.com/Vicky3120/vsd-riscv/blob/0348607a15c39ffe63a27ebc95b305d2876f9404/task%203/i%20type.png)
+**Example: ADDI rd, rs1, imm**
+- **opcode**: 0010011 (for immediate arithmetic operations)
+- **funct3**: 000 (for ADDI)
+- **imm**: Immediate value
+- **rs1**: Source register 1
+- **rd**: Destination register
+### S-Type Instructions
+![image](https://github.com/Vicky3120/vsd-riscv/blob/0348607a15c39ffe63a27ebc95b305d2876f9404/task%203/s%20type.png)
+**Example: SW rs2, imm(rs1)**
+- **opcode**: 0100011 (for store operations)
+- **funct3**: 010 (for SW)
+- **imm**: Immediate value (split into imm[11:5] and imm[4:0])
+- **rs1**: Base address register
+- **rs2**: Source register to be stored
+### B-Type Instructions
+![image](https://github.com/Vicky3120/vsd-riscv/blob/0348607a15c39ffe63a27ebc95b305d2876f9404/task%203/b%20type.png)
+**Example: BEQ rs1, rs2, imm**
+- **opcode**: 1100011 (for branch operations)
+- **funct3**: 000 (for BEQ)
+- **imm**: Immediate value (split into imm[12], imm[10:5], imm[4:1], imm[11])
+- **rs1**: Source register 1
+- **rs2**: Source register 2
+### U-Type Instructions
+U-Type instructions are used for operations like loading upper immediate (LUI) and adding upper immediate to PC (AUIPC).
+### Extracting Immediate Value
+- The immediate value in U-type instructions spans bits [31:12].
+- To extract this value, you can mask the instruction with `0xFFFFF000`.
+- **Example**: If the instruction value is `0x12345000`, applying the mask will yield `0x12345000`.
+### Encoding and Usage
+- The immediate value extracted directly forms part of the U-type instruction.
+  - For **LUI**, this value is loaded into the destination register.
+  - For **AUIPC**, this value is added to the current PC.
+![image](https://github.com/Vicky3120/vsd-riscv/blob/0348607a15c39ffe63a27ebc95b305d2876f9404/task%203/u%20type.png)
+**Example: LUI rd, imm**
+- **opcode**: 0110111 (for LUI)
+- **imm**: Upper 20 bits of the immediate value
+- **rd**: Destination register
+### J-Type Instructions
+![image](https://github.com/Vicky3120/vsd-riscv/blob/0348607a15c39ffe63a27ebc95b305d2876f9404/task%203/j%20type.png)
+**Example: JAL rd, imm**
+- **opcode**: 1101111 (for JAL)
+- **imm**: Immediate value (split into imm[20], imm[10:1], imm[11], imm[19:12])
+- **rd**: Destination register (stores the return address)
+
+# 32-Bit instruction code for 15 unique RISC-V instructions
+![Instructions](https://github.com/Vicky3120/vsd-riscv/blob/0348607a15c39ffe63a27ebc95b305d2876f9404/task%203/main.png)
+
+</details>
+</details>
+
+
+---
+<details><summary><b>
+Task 4:</b>Perform a functional simulation of the given RISC-V Core Verilog netlist and 
+testbench. </summary>
+
+<br>
+
+Functional simulation of RISC-V cores involves verifying that the core behaves correctly according to its design specifications. This process includes testing all possible instructions, ensuring compliance with the RISC-V instruction set architecture (ISA), and checking for any security vulnerabilities or malicious logic
+
+
+ # About iverilog and gtkwave
+1. Icarus Verilog is an implementation of the Verilog hardware description language.
+2. GTKWave is a fully featured GTK+ v1. 2 based wave viewer for Unix and Win32 which reads Ver Structural Verilog Compiler generated AET files as well as standard Verilog VCD/EVCD files and allows their viewing.
+
+**Step 1: installation of iverilog and gtkwave**
+   using the below commands in ubuntu
+   ```sh
+   $   sudo apt get update
+   $   sudo apt get install iverilog gtkwave
+   ```
+
+ **Step 2: clone the repository and download the netlist files for simulation by entering the following commands in terminal.**
+  ```sh
+   $ git clone https://github.com/vinayrayapati/iiitb_rv32i
+   $ cd iiitb_rv32i
+   $ gedit iiitb_rv32i.v
+   $ gedit iiitb_rv32i_tb.v
+   ```
+**Step 3: To simulate and run the verilog code , enter the following commands in your terminal.**
+  ```sh
+ $ iverilog -o iiitb_rv32i iiitb_rv32i.v iiitb_rv32i_tb.v
+ $ ./iiitb_rv32i
+   ```
+**Step 4:To see the output waveform in gtkwave, enter the following commands in your terminal.**
+ ```sh
+ $ gtkwave iiitb_rv32i.vcd
+   ```
+# The output waveform :
+As shown in the figure below, all the instructions in the given verilog file is hard-coded. Hard-coded means that instead of following the RISCV specifications bit pattern, the designer has hard-coded each instructions based on their own pattern. 
+
+![image](https://github.com/Vicky3120/vsd-riscv/blob/356c8adb02203f6320da40c4a55ac8f6a21c76f7/task4/code.png)
+
+
+## Analysis of output waveforms
+The waveform includes the following key signals:
+
+clk: The clock signal driving the design.
+
+NPC [31:0]: The next program counter value.
+
+WB_OUT [31:0]: The write-back output signal.
+
+
+**1. add r6,r1,r2**
+![ADD](https://github.com/Vicky3120/vsd-riscv/blob/356c8adb02203f6320da40c4a55ac8f6a21c76f7/task4/ADD.jpg))
+
+
+
+**2. sub r7,r1,r2**
+![SUB](https://github.com/Vicky3120/vsd-riscv/blob/356c8adb02203f6320da40c4a55ac8f6a21c76f7/task4/SUB.jpg)
+
+
+**3. and r8,r1,r3**
+![AND](https://github.com/Vicky3120/vsd-riscv/blob/356c8adb02203f6320da40c4a55ac8f6a21c76f7/task4/AND.jpg)
+
+
+**4. or r9,r2,r5**
+![OR](https://github.com/Vicky3120/vsd-riscv/blob/356c8adb02203f6320da40c4a55ac8f6a21c76f7/task4/OR.jpg)
+
+
+**5. xor r10,r1,r4**
+![XOR](https://github.com/Vicky3120/vsd-riscv/blob/356c8adb02203f6320da40c4a55ac8f6a21c76f7/task4/XOR.jpg)
+
+
+**6. slt r11,r2,r4**
+![SLT](https://github.com/Vicky3120/vsd-riscv/blob/356c8adb02203f6320da40c4a55ac8f6a21c76f7/task4/SLT.jpg)
+
+ 
+**7. addi r12,r4,5**
+![ADDI](https://github.com/Vicky3120/vsd-riscv/blob/356c8adb02203f6320da40c4a55ac8f6a21c76f7/task4/ADDI.jpg)
+
+
+**8. sw r3,r1,2**
+![WhatsApp Image 2025-02-10 at 15 42 05_af74797c](https://github.com/user-attachments/assets/a604fcf4-a0bd-4e7a-8dad-64a755dd7197)
+
+
+**9.  lw r13,r1,2**
+![LW](https://github.com/Vicky3120/vsd-riscv/blob/356c8adb02203f6320da40c4a55ac8f6a21c76f7/task4/LW.jpg)
+
+
+**10.  beq r0,r0,15**
+![BEQ](https://github.com/Vicky3120/vsd-riscv/blob/356c8adb02203f6320da40c4a55ac8f6a21c76f7/task4/BEQ.jpg)
+
+
+---
