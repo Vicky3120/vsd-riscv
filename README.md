@@ -368,3 +368,64 @@ WB_OUT [31:0]: The write-back output signal.
 
 
 ---
+
+
+<details><summary><b>
+Task 5:</b>Implementation of Full Adder using VSDSquadron Mini Board.</summary>
+
+## Project Overview
+A full adder is a digital circuit that adds two binary digits and a carry-in digit to produce a sum and carry-out digit.
+
+
+## Pin Configuration
+| **Component** | **Pin** |
+|----------------|---------|
+| **VSD SQUADRON BOARD** | **Led** |
+| **SUM LED ** | **Pin4(PD4)** |
+| **Carry LED ** | **Pin5(PD5)** |
+
+
+## Truth Table
+![Truth table](https://github.com/Vicky3120/vsd-riscv/blob/146ea997bd6d9ab11cd10dde0e393ddf97036b35/task%205/1745232449966671_r4_311753843779268336.png)
+
+
+## Circuit Diagram
+![WhatsApp Image 2025-02-17 at 22 44 58_d3bfbe8d](https://github.com/Vicky3120/vsd-riscv/blob/146ea997bd6d9ab11cd10dde0e393ddf97036b35/task%205/1745232440572963_r4_311753843685108336.png)
+
+
+## Working
+Step-by-Step Working on the VSDSquadron Mini Board
+1. Input Mechanism (GPIO Inputs)
+The input values (A, B, and Cin) are provided using GPIO inputs through buttons or switches connected to the VSDSquadron Mini board. These GPIO inputs represent the binary bits that the full adder will process.
+
+2. Logic Processing Using FPGA
+The full adder logic is implemented in Verilog and synthesized onto the FPGA present on the VSDSquadron Mini board.
+The Verilog code defines the Boolean logic for the Sum and Carry outputs:
+
+Sum = A ^ B ^ Cin
+
+Carry = (A & B) | (B & Cin) | (Cin & A)
+
+The FPGA reads the input values in real-time from the GPIO pins, processes them using the logic implemented in Verilog, and generates the corresponding outputs.
+
+3. Output Representation
+The output signals, Sum and Carry, are connected to LEDs or 7-segment display segments on the VSDSquadron Mini board.
+Depending on the logic result:
+
+If the Sum or Carry output is HIGH (1), the corresponding LED lights up.
+
+If the output is LOW (0), the LED remains off.
+
+#Demonstration Video
+(https://drive.google.com/file/d/1tuhI6xsBiz7pAaFAqvZJdvrKcOE6OaUm/view?usp=sharing)
+
+
+</details>
+</details>
+
+---
+
+
+
+
+
