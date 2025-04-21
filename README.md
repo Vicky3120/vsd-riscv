@@ -366,6 +366,9 @@ WB_OUT [31:0]: The write-back output signal.
 **10.  beq r0,r0,15**
 ![BEQ](https://github.com/Vicky3120/vsd-riscv/blob/356c8adb02203f6320da40c4a55ac8f6a21c76f7/task4/BEQ.jpg)
 
+</details>
+</details>
+
 
 ---
 
