@@ -419,7 +419,7 @@ If the Sum or Carry output is HIGH (1), the corresponding LED lights up.
 
 If the output is LOW (0), the LED remains off.
 
-#Demonstration Video
+# Demonstration Video
 (https://drive.google.com/file/d/1tuhI6xsBiz7pAaFAqvZJdvrKcOE6OaUm/view?usp=sharing)
 
 
@@ -427,6 +427,140 @@ If the output is LOW (0), the LED remains off.
 </details>
 
 ---
+<details><summary><b>
+Task 6:</b>Project Implementation</summary>
+
+## Steps to implement
+1. Hardware Setup:
+  - VSDSquadron Mini RISC-V Board
+   
+  - Resistors
+   
+   -LEDs (to display Sum and Carry)
+   
+  - Breadboard and jumper wires (for connections)
+   
+  - Power supply (USB or external source)
+
+2.Compilation and Upload:
+
+-Compile the code
+
+-Upload to VSDSquadron Mini Board
+
+3.Testing and Debugging:
+
+-Input testing
+
+-Debugging
+
+## Expected Output
+
+1.LED1 (Sum): Turns ON when either one of the buttons is pressed
+
+2.LED2 (Carry) : Turns ON when A and B are pressed. 
+
+3.Both the LED (Sum and Carry) Turns ON when a, b and cin are pressed.
+
+The LEDs will turn on accordingly based on the Input Given.
+
+
+## Code Implementation
+```sh
+#include<stdio.h>
+#include<debug.h>
+#include<ch32v00x.h>
+
+// Defining the Logic Gate Function 
+int and(int bit1, int bit2)
+{
+    int out = bit1 & bit2;
+    return out;
+}
+int or(int bit1, int bit2)
+{
+    int out = bit1 | bit2;
+    return out;
+}
+int xor(int bit1, int bit2)
+{
+    int out = bit1 ^ bit2;
+    return out;
+}
+
+// Configuring GPIO Pins
+void GPIO_Config(void)
+{
+    GPIO_InitTypeDef GPIO_InitStructure = {0}; // structure variable used for GPIO configuration
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE); // to enable the clock for port D
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE); // to enable the clock for port C
+    
+    // Input Pins Configuration
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_3;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU; // Defined as Input Type
+    GPIO_Init(GPIOD, &GPIO_InitStructure);
+
+    //Output Pins Configuration
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_5;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; // Defined Output Type
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz; // Defined Speed
+    GPIO_Init(GPIOC, &GPIO_InitStructure);
+}
+
+// The MAIN function responsible for the execution of program
+int main()
+{
+    uint8_t A, B, Cin, Sum, Carry; // Declared the required variables
+    uint8_t p, q, r, s, t; 
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
+    SystemCoreClockUpdate();
+    Delay_Init();
+    GPIO_Config();
+
+    while(1)
+    {
+        A = GPIO_ReadInputDataBit(GPIOD, GPIO_Pin_1);
+        B = GPIO_ReadInputDataBit(GPIOD, GPIO_Pin_2);
+        Cin = GPIO_ReadInputDataBit(GPIOD, GPIO_Pin_3);
+        s = xor(A, B);
+        Sum = xor(Cin, s);
+        p = and(A, B);
+        q = and(B, Cin);
+        r = and(Cin, A);
+        t = or(p, q);
+        Carry = or(r, t);
+
+        /* SUM */
+        if(Sum == 0)
+        {
+            GPIO_WriteBit(GPIOC, GPIO_Pin_4, SET);
+        }
+        else
+        {
+            GPIO_WriteBit(GPIOC, GPIO_Pin_4, RESET);
+        }
+
+        /* CARRY */
+        if(Carry == 0)
+        {
+            GPIO_WriteBit(GPIOC, GPIO_Pin_5, SET);
+        }
+        else
+        {
+            GPIO_WriteBit(GPIOC, GPIO_Pin_5, RESET);
+        }
+    }
+}
+```
+
+## Conclusion
+This implementation demonstrates the use of the VSDSquadron Mini board to design and verify a basic Full Adder circuit. The Full Adder successfully adds two binary inputs along with a carry-in, and outputs the sum and carry-out using LEDs. This project reinforced fundamental concepts of digital design such as binary addition, logic gates, and practical hardware implementation. Overall, it was a valuable hands-on learning experience in digital electronics.
+
+</details>
+
+---
+ 
+
 
 
 
