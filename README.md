@@ -384,8 +384,8 @@ A full adder is a digital circuit that adds two binary digits and a carry-in dig
 | **Component** | **Pin** |
 |----------------|---------|
 | **VSD SQUADRON BOARD** | **Led** |
-| **SUM LED ** | **Pin4(PD4)** |
-| **Carry LED ** | **Pin5(PD5)** |
+| ** SUM LED ** | **Pin4(PD4)** |
+| ** Carry LED ** | **Pin5(PD5)** |
 
 
 ## Truth Table
